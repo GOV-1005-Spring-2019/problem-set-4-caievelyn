@@ -11,6 +11,8 @@ library(dplyr)
 library(tidyverse)
 library(devtools)
 library(gt)
+library(ggplot2)
+library(ggbeeswarm)
 ```
 
 ``` {r Question 1 madlibs}
@@ -103,4 +105,35 @@ x %>%
   na_if(0) %>%
   # Change NA to a dash
   fmt_missing(columns = vars(Und), rows = 4)
+```
+
+## Question 3
+
+``` {r Question 3 Graphic}
+x %>%
+  # Select for the two variables that will be used / displayed in graphic
+  select(educ, final_weight) %>%
+  # Filter out refused responses to education question
+  filter(educ != "[DO NOT READ] Refused") %>%
+  # Mutate function changes the order of the education levels in the display
+  mutate(educ = fct_relevel(educ, "Grade school", "High school", 
+                            "Some college or trade school", 
+                            "Bachelors' degree", "Graduate or Professional Degree")) %>%
+  # Group every final_weight value by its associated education level
+  group_by(educ) %>%
+  # Call a ggplot and pass in the previous values in, with the categorical variable on the x-axis (coord flip will occur later)
+  ggplot(mapping = aes(x = educ, y = final_weight)) + 
+  # Create a violin plot for the outline, alpha value is for transparency
+  geom_violin(alpha = 0.7) +
+  # Scatter the points and color them, increasing the transparency
+  geom_jitter(color = 'grey25', alpha = 0.3) +
+  # Flip x & y coordinates
+  coord_flip() +
+  # Label the title, subtitle, and caption
+  labs(title = "More Educated Matter Less in North Carolina 9th",
+       subtitle = "Poll gives more weight to people who are less likely to participate in polls",
+       caption = "New York Times Upshot/Siena College 2018 live polls") +
+  # Label the y axis (now x axis due to coordflip)
+  ylab("Weight Given to Respondent in Calculating Poll Results") +
+  xlab(NULL) 
 ```

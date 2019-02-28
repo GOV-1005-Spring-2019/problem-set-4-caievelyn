@@ -15,7 +15,7 @@ library(ggplot2)
 library(ggbeeswarm)
 ```
 
-``` {r Question 1 madlibs}
+``` {r Question 1 madlibs, message = FALSE}
 # Read in CSV file
 x <- read_csv(file = "ps_4_elections-poll-nc09-3.csv")
 
@@ -136,4 +136,24 @@ x %>%
   # Label the y axis (now x axis due to coordflip)
   ylab("Weight Given to Respondent in Calculating Poll Results") +
   xlab(NULL) 
+```
+
+## Question 4
+
+``` {r Question 4 graphic}
+x %>%
+  select(gender, final_weight) %>%
+  # Filter out refused responses to the ethnicity/race question
+  filter(gender != "[DO NOT READ] Refused") %>%
+  group_by(gender, final_weight) %>%
+  # Associate race and party through group_by function
+  ggplot(mapping = aes(x = gender, y = final_weight)) + 
+  geom_boxplot() +
+  geom_jitter(alpha = 0.3, color = 'blueviolet') +
+  coord_flip() +
+  labs(title = "Polling Weight per Gender in NC 9",
+       subtitle = "Females have a higher median polling weight than males",
+       caption = "Source: https://raw.githubusercontent.com/TheUpshot/2018-live-poll-results/master/data/elections-poll-nc09-3.csv") +
+  xlab(NULL) +
+  ylab("Polling Weight")
 ```

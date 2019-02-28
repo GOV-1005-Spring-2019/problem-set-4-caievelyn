@@ -23,10 +23,28 @@ rep_number <- x %>% filter(response == "Rep") %>%
 # Create separate variable to store the value of the number of Republican supporters
 und_number <- x %>% filter(response == "Und") %>%
   count()
-
-# something
-x %>%
-  setequal
+  
+# Question 3
+rep_timestamp <- x %>%
+  # Filter for only Republican favoring participants
+  filter(response == "Rep") %>%
+  # Only select for the one thing we are interested in (timestamp)
+  select(timestamp) %>%
+  # Arrange from earliest to latest time
+  arrange(timestamp) %>%
+  # Take the top result
+  slice(1) %>%
+  # Turn the tibble into a vector for the strptime() function
+  pull(timestamp) %>%
+  strptime(format = "%Y-%m-%d %H:%M:%S")
+# Same process for the Democrat-favoring participants
+dem_timestamp <- x %>%
+  filter(response == "Dem") %>%
+  select(timestamp) %>%
+  arrange(timestamp) %>%
+  slice(1) %>%
+  pull(timestamp) %>%
+  strptime(format = "%Y-%m-%d %H:%M:%S")
 
 ```
 ## Question 1
@@ -39,7 +57,7 @@ There are two gender variables (`gender` and `gender_combined`). There are `r ` 
 
 There are `r ` respondents listed as “White” under race_eth who are not listed as “White” under file_race_black.
 
-The first response of Rep came `r ` minutes (rounded to the nearest minute) before the first response of Dem.
+The first response of Rep came `r difftime(rep_timestamp, dem_timestamp, units = "mins") %>% round(digits = 0)` minutes (rounded to the nearest minute) before the first response of Dem.
 
 
 ## Question 2

@@ -19,14 +19,14 @@ library(ggbeeswarm)
 # Read in CSV file
 x <- read_csv(file = "ps_4_elections-poll-nc09-3.csv")
 
-# Create separate variable to store value of number of Republican supporters
+# Question 1: Create separate variable to store value of number of Republican supporters
 rep_number <- x %>% filter(response == "Rep") %>%
   count()
 # Create separate variable to store the value of the number of Republican supporters
 und_number <- x %>% filter(response == "Und") %>%
   count()
   
-# Question 3
+# Question 3: turn the top timestamp character string into the date/time format
 rep_timestamp <- x %>%
   # Filter for only Republican favoring participants
   filter(response == "Rep") %>%

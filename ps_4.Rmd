@@ -19,14 +19,14 @@ library(ggbeeswarm)
 # Read in CSV file
 x <- read_csv(file = "ps_4_elections-poll-nc09-3.csv")
 
-# Question 1: Create separate variable to store value of number of Republican supporters
+# Question 2: Create separate variable to store value of number of Republican supporters
 rep_number <- x %>% filter(response == "Rep") %>%
   count()
 # Create separate variable to store the value of the number of Republican supporters
 und_number <- x %>% filter(response == "Und") %>%
   count()
   
-# Question 3: turn the top timestamp character string into the date/time format
+# Question 5: turn the top timestamp character string into the date/time format
 rep_timestamp <- x %>%
   # Filter for only Republican favoring participants
   filter(response == "Rep") %>%
@@ -55,9 +55,9 @@ There were `r x %>% filter(response == "Dem") %>% count()` respondents who suppo
 
 There were `r x %>% summarize(difference = rep_number - und_number)` more respondents who favored the Republican candidate than who were Undecided.
 
-There are two gender variables (`gender` and `gender_combined`). There are `r ` individuals for whom these variables have different values.
+There are two gender variables (`gender` and `gender_combined`). There are `r x %>% select(gender, gender_combined) %>% filter(gender != gender_combined) %>% count()` individuals for whom these variables have different values.
 
-There are `r ` respondents listed as “White” under race_eth who are not listed as “White” under file_race_black.
+There are `r x %>% filter(race_eth == "White", file_race_black != "White") %>% count()` respondents listed as “White” under race_eth who are not listed as “White” under file_race_black.
 
 The first response of Rep came `r difftime(rep_timestamp, dem_timestamp, units = "mins") %>% round(digits = 0)` minutes (rounded to the nearest minute) before the first response of Dem.
 
@@ -143,17 +143,23 @@ x %>%
 ``` {r Question 4 graphic}
 x %>%
   select(gender, final_weight) %>%
-  # Filter out refused responses to the ethnicity/race question
+  # Filter out refused responses to the gender question
   filter(gender != "[DO NOT READ] Refused") %>%
+  # Associate gender and polling weight through group_by function
   group_by(gender, final_weight) %>%
-  # Associate race and party through group_by function
+  # Create a ggplot in which the categorical variable is on the x axis (will coord flip)
   ggplot(mapping = aes(x = gender, y = final_weight)) + 
+  # Create a boxplot
   geom_boxplot() +
+  # Jitter the points with slight transparency and add a purple color
   geom_jitter(alpha = 0.3, color = 'blueviolet') +
+  # Flip the x / y variables
   coord_flip() +
+  # Label the title, subtitle, and caption to reflect the relationship between gender and polling weight and source of data
   labs(title = "Polling Weight per Gender in NC 9",
        subtitle = "Females have a higher median polling weight than males",
        caption = "Source: https://raw.githubusercontent.com/TheUpshot/2018-live-poll-results/master/data/elections-poll-nc09-3.csv") +
   xlab(NULL) +
+  # Rename y-axis
   ylab("Polling Weight")
 ```
